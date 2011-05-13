@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{46E008CD-851B-40C0-8540-9FEDBFADEFBB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Core</AssemblyName>
+    <RootNamespace>Core</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="Tao.OpenGl, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Tao.OpenGl.dll</HintPath>
+    </Reference>
+    <Reference Include="SdlDotNet, Version=6.1.0.0, Culture=neutral, PublicKeyToken=26ad4f7e10c61408">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\SdlDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="Tao.Sdl, Version=1.2.13.0, Culture=neutral, PublicKeyToken=9c7a200e36c0094e">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Tao.Sdl.dll</HintPath>
+    </Reference>
+    <Reference Include="Tao.OpenGl.ExtensionLoader, Version=1.5.0.3, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Tao.OpenGl.ExtensionLoader.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="Net\Proto.cs" />
+    <Compile Include="Net\UDP\Server.cs" />
+    <Compile Include="Net\Demux.cs" />
+    <Compile Include="Net\Mux.cs" />
+    <Compile Include="Net\User.cs" />
+    <Compile Include="Net\Wire.cs" />
+    <Compile Include="World\World.cs" />
+    <Compile Include="World\Session.cs" />
+    <Compile Include="Scene\vector.cs" />
+    <Compile Include="Scene\Space.cs" />
+    <Compile Include="Scene\Thing.cs" />
+    <Compile Include="Cortex\Cortex.cs" />
+    <Compile Include="Net\UDP\Broadcast.cs" />
+    <Compile Include="Net\UDP\TxWire.cs" />
+    <Compile Include="Net\UDP\RxWire.cs" />
+    <Compile Include="World\Player.cs" />
+    <Compile Include="Cortex\Users.cs" />
+    <Compile Include="Net\UDP\BxWire.cs" />
+    <Compile Include="Pair.cs" />
+    <Compile Include="Scene\Body.cs" />
+    <Compile Include="World\Mods\Terrain.cs" />
+    <Compile Include="Scene\Resources.cs" />
+    <Compile Include="Scene\Light.cs" />
+    <Compile Include="World\Mods\Vehicles.cs" />
+    <Compile Include="World\Mods\Strips.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <DotNetNamingPolicy DirectoryNamespaceAssociation="PrefixedHierarchical" ResourceNamePolicy="FileFormatDefault" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="Net\" />
+    <Folder Include="Scene\" />
+    <Folder Include="Net\UDP\" />
+    <Folder Include="World\" />
+    <Folder Include="Cortex\" />
+    <Folder Include="Net\TCP\" />
+    <Folder Include="World\Mods\" />
+  </ItemGroup>
+</Project>

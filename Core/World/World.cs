@@ -136,7 +136,9 @@ public class World
                  List<Vehicle> vehicles = new List<Vehicle>();
                  List<Strip> strips = new List<Strip>();
 
-                 strips.Add(new Strip(space, Thing.TYPE_PLANE0, -0.30f, -0.36f));
+                 strips.Add(new Strip(space, Thing.TYPE_PLANE0, -0.30f, -0.36f, 1.0f, 0.0f));
+                 strips.Add(new Strip(space, Thing.TYPE_PLANE1, -0.15f, +0.23f, 1.0f, -1.0f));
+                 strips.Add(new Strip(space, Thing.TYPE_COPTER, +0.40f, -0.04f, 0.0f, 0.0f));
 
                  List<UId> zombies = new List<UId>();
 
@@ -235,7 +237,7 @@ public class World
                                              float    px =-1.0f + 2.0f * (float)rnd.NextDouble();
                                              float    py = 1.0f;
 
-                                             Vehicle  vec = new Military(space);
+                                             Vehicle  vec = GenerateVehicle(rnd.Next());
                                                       vec.Pos = new vector(px, py, 0.0f);
                                                       vec.Rot = new vector( 0.0f, 0.0f, (float)Math.Atan2(-py, -px) );
 
@@ -453,6 +455,17 @@ public class World
            Thing thing = null;
            if (!space.things.TryGetValue(obj, out thing))
                return;
+   }
+
+   private Vehicle GenerateVehicle(int typenum)
+   {
+           switch (typenum % 3)
+           {
+             case  0:  return new Combat(space);
+             case  1:  return new Airliner(space);
+             case  2:  return new Helicopter(space);
+             default:  return null;
+           }
    }
 
    private Player getGamerId(byte id)

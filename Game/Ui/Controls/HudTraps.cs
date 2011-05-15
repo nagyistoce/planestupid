@@ -128,17 +128,20 @@ public class Trap :Widget, Thing.Ai
 
        if (e.ButtonPressed)
        {
-           if (Window.Contains(e.Position))
+           if ((vehicle.Flags[Proto.Vehicle.SI_MODS] & Proto.Vehicle.MOD_LANDING) == 0)
            {
-               Point Pos = new Point(X + Width / 2, Y + Height / 2);
-               SdlDotNet.Input.Mouse.MousePosition = Pos;
+               if (Window.Contains(e.Position))
+               {
+                   Point Pos = new Point(X + Width / 2, Y + Height / 2);
+                   SdlDotNet.Input.Mouse.MousePosition = Pos;
 
-               vehicle.Route = new Vehicle.Path();
-               ptprev = DesktopToSpace(Pos);
-               ptcurrent = DesktopToSpace(Pos);
-               trtimer = 0.0f;
-               hrilock = true;
-               mode |= MODE_DOWN;
+                   vehicle.Route = new Vehicle.Path();
+                   ptprev = DesktopToSpace(Pos);
+                   ptcurrent = DesktopToSpace(Pos);
+                   trtimer = 0.0f;
+                   hrilock = true;
+                   mode |= MODE_DOWN;
+               }
            }
        }   else
        {
@@ -351,14 +354,13 @@ public class Trap :Widget, Thing.Ai
 
 public class LandingSpot :Widget, iLandingSpot
 {
-           Rectangle hotspot;
+   protected Rectangle hotspot;
 
    protected int showcnt;
 
    public LandingSpot(Widget parent, int x, int y, int width, int height)
    :base(parent, x, y, width, height, true)
    {
-           hotspot = new Rectangle(x + 1, y + 1, 48, 48);
    }
 
    public  bool PtIsInside(Point pt)
@@ -402,6 +404,7 @@ public class Strip :LandingSpot
    public Strip(Widget parent, int x, int y)
    :base(parent, x, y, 128, 48)
    {
+           hotspot = new Rectangle(x, y, 48, 48);
            pointer = new Surface("res/strip-pointer.png");
    }
 
@@ -432,26 +435,125 @@ public class Strip :LandingSpot
 
    public  override void Draw(Surface dst)
    {
-           if ((mode & MODE_HIGHLIGHT) != 0)
-           {
-                int x = dx;
+       if ((mode & MODE_HIGHLIGHT) != 0)
+       {
+           int x = dx;
   
-                while (x >= 0)
-                {
-                       dst.Blit(pointer, new Point(X + x, Y + 0));
-                       x -= pointer.Width / 2;
-                }
-            }
-
-            dst.Blit(this);
-    }
+           while (x >= 0)
+           {
+                  dst.Blit(pointer, new Point(X + x, Y + 0));
+                  x -= pointer.Width / 2;
+           }
+       }
+   }
 }
 
-public class Helipad :Widget
+public class Strip45 :LandingSpot
 {
-   public Helipad(Widget parent, int x, int y)
-   :base(parent, x, y, 64, 64, true)
+           Surface pointer;
+           Point   pc;
+
+   const int MODE_HIGHLIGHT = 1;
+
+           int mode;
+
+   public Strip45(Widget parent, int x, int y)
+   :base(parent, x - 64, y - 64, 128, 128)
    {
+           hotspot = new Rectangle(x - 24, y - 24, 48, 48);
+           pointer = new Surface("res/strip45-pointer.png");
+           pc.X = x;
+           pc.Y = y;
+   }
+
+           int  dx;
+
+   public  override bool Sync(float dt)
+   {
+       int lmode = mode;
+
+       if (showcnt > 0)
+           mode |= MODE_HIGHLIGHT;
+           else
+           mode &= ~MODE_HIGHLIGHT;
+
+       if ((mode & MODE_HIGHLIGHT) != 0)
+       {
+           dx += 4;
+           
+           if (dx > 48)
+               dx = 0; 
+       }   else
+       {
+           dx = 0;
+       }
+
+           return true;
+   }
+
+   public  override void Draw(Surface dst)
+   {
+       if ((mode & MODE_HIGHLIGHT) != 0)
+       {
+           int x = dx;
+           while (x >= 0)
+           {
+                  dst.Blit(pointer, new Point(pc.X + x - pointer.Width / 2, pc.Y - x - pointer.Height / 2));
+                  x -= pointer.Width / 4;
+           }
+       }
+   }
+}
+
+public class Helipad :LandingSpot
+{
+           Surface pointer;
+           Point pc;
+
+   const int MODE_HIGHLIGHT = 1;
+
+           int mode;
+
+   public Helipad(Widget parent, int x, int y)
+   :base(parent, x - 32, y - 32, 64, 64)
+   {
+           hotspot = new Rectangle(x - 24, y - 24, 48, 48);
+           pointer = new Surface("res/helipad-pointer.png");
+           pc.X = x;
+           pc.Y = y;
+   }
+
+           int  dx;
+
+   public  override bool Sync(float dt)
+   {
+       int lmode = mode;
+
+       if (showcnt > 0)
+           mode |= MODE_HIGHLIGHT;
+           else
+           mode &= ~MODE_HIGHLIGHT;
+
+       if ((mode & MODE_HIGHLIGHT) != 0)
+       {
+           dx += 4;
+           
+           if (dx > 48)
+               dx = 0; 
+       }   else
+       {
+           dx = 0;
+       }
+
+           return true;
+   }
+
+   public  override void Draw(Surface dst)
+   {
+       if ((mode & MODE_HIGHLIGHT) != 0)
+       {
+            dst.Blit(pointer, new Point(pc.X - pointer.Width / 2, pc.Y - pointer.Height / 2));
+       }
    }
 }
 

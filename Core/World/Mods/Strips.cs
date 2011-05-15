@@ -37,11 +37,11 @@ public class Strip :Thing
    protected const double l = 1.00f;
    protected const double r = 0.1f;
 
-   public Strip(Space space, int flt, float px, float py)
+   public Strip(Space space, int flt, float px, float py, float drx, float dry)
    :base(space, -1, TYPE_STRIP)
    {
           filter = flt;
-          a     = new vector(1.0f, 0.0f, 0.0f);
+          a     = new vector(drx, dry, 0.0f);
           pos.x = px;
           pos.y = py;
    }

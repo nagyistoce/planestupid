@@ -95,7 +95,8 @@ public class Play :App, Cortex.iDynamics
 
            /* load your crap here */
            spots.Add(Vehicle.TYPE_PLANE0, new Strip(this, 256, 71));
-           //spots.Add(Vehicle.TYPE_PLANE1, new Strip(this, 256, 71));
+           spots.Add(Vehicle.TYPE_PLANE1, new Strip45(this, 338, 334));
+           spots.Add(Vehicle.TYPE_COPTER, new Helipad(this, 560, 224));
 
            countdown = 10.0f;
            mGameBox = new GameBox(this);
@@ -256,7 +257,7 @@ public class Play :App, Cortex.iDynamics
                   switch(type)
                   {
                     case Thing.TYPE_TERRAIN: thing = new Terrain(space, id); break;
-                    case Thing.TYPE_PLANE0: thing = vehicle = new Military(space, id); break;
+                    case Thing.TYPE_PLANE0: thing = vehicle = new Combat(space, id); break;
                     case Thing.TYPE_PLANE1: thing = vehicle = new Airliner(space, id); break;
                     case Thing.TYPE_COPTER: thing = vehicle = new Helicopter(space, id); break;
                   }
@@ -397,13 +398,16 @@ public class Play :App, Cortex.iDynamics
            {
                 space.Draw(dst, 255);
 
+                for (int x = widgets.Count - 1; x >= 0; x--)
+                {
+                        widgets[x].Draw(dst);
+                }
+
                 if (!freeze)
                 {
                     lock(traps) {
 
                       lock(space.things) {
-
-                         Box     box = new Box(0, 0, 1, 1);
 
                          foreach(Trap trap in traps)
                          {
@@ -411,6 +415,7 @@ public class Play :App, Cortex.iDynamics
                                  Color  color = colors[vehicle.Id & 0x0f];
 
                                  Point   px = new Point(0, 0);
+                                 Color[,] box = new Color[,]{ {color, color}, {color, color} };
 
                                  int     cnt = 0;
 
@@ -423,7 +428,8 @@ public class Play :App, Cortex.iDynamics
                                          if ((cnt % 4) == 0)
                                          { 
                                              px = Trap.SpaceToDesktop(sp);
-                                             dst.Draw(px, color);
+                                             //dst.Draw(px, color);
+                                             dst.SetPixels(px, box);
                                           }
                                              cnt++;
                                      }
@@ -437,12 +443,7 @@ public class Play :App, Cortex.iDynamics
                     /*lock*/}
                 }
 
-                
-                for (int x = widgets.Count - 1; x >= 0; x--)
-                {
-                        widgets[x].Draw(dst);
-                }
-
+                        hud.Draw(dst);
                 /*
                       //highlight points on the map
                         Point p   = space.SpaceToDesktop(-.36f, -.36f);
@@ -451,7 +452,6 @@ public class Play :App, Cortex.iDynamics
 
                         dst.Draw(hp, Color.Red, false, true);
                 */
-                        hud.Draw(dst);
            }
 
            dst.Update();

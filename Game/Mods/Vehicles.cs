@@ -38,23 +38,25 @@ public class Vehicle :Thing
    protected float rolltime;
    protected vector velocity;
    protected Surface model;
+   protected Surface fx;
 
    public class Path :Queue<PointF>  {}
 
            Path path;
            PointF node;
 
+   protected int width = 48;
+   protected int height = 48;
+
    public Vehicle(Space space, int id, int type)
    :base(space, id, type)
    {
          mode = INT_SOLID;
-         surface = new Surface(48, 48, 32, true);
-         surface.Transparent = true;
-         surface.AlphaBlending = true;
-         surface.Alpha = 255;
    }
 
            int tstep;
+           int tfx;
+           int alpha = 255;
            float talpha;
 
    public  override bool  Step(float dt)
@@ -65,16 +67,13 @@ public class Vehicle :Thing
       if  (ai != null)
            ai.Step(this, dt);
 
-      if (tstep++ > 255)
-          tstep = 0;
-
       if ((flags[Proto.Vehicle.SI_MODS] & Proto.Vehicle.MOD_LANDING) != 0)
       {
               talpha += dt;
           if (talpha > rolltime)
           {
-              if (surface.Alpha > 0)
-                  surface.Alpha -= 1;
+              if (alpha > 0)
+                  alpha -= 1;
           }
       }
 
@@ -120,23 +119,33 @@ public class Vehicle :Thing
                index = 8 + index;
 
                Point   p = space.SpaceToDesktop(pos.x, pos.y);
-                       p.Offset(-24, -24);
+                       p.Offset(-width / 2, -height / 2);
 
-               Rectangle r = new Rectangle(index * 48, 0, 48, 48);
+               Rectangle r = new Rectangle(index * width, 0, width, height);
 
-           //not drawing directly on [target] makes the planes look ugly,
-           //cause apparently sdl doesn't blit source alpha
-           //drawing directly though we can't use surface alpha, which we need
-           //to smoothly fade the plane out of scene when it's landing
-            if (((flags[Proto.Vehicle.SI_MODS] & Proto.Vehicle.MOD_COLLIDED) != 0) || (surface.Alpha < 255))
+            if (++tfx > 3)
+                tfx = 0;
+
+                Rectangle f = new Rectangle(tfx * width, 0, width, height);
+
+            if (((flags[Proto.Vehicle.SI_MODS] & Proto.Vehicle.MOD_COLLIDED) != 0) || (alpha < 255))
             {
-                   if ((tstep % 8) > 4)
-                      target.Blit(model, p, r);
+                if (tstep++ > 255)
+                    tstep = 0;
 
-               }   else
-               {
-                   target.Blit(model, p, r);
-               }
+                if ((tstep % 8) > 4)
+                     target.Blit(model, p, r);
+
+                if (fx != null)
+                    target.Blit(fx, p, f);
+
+            }   else
+            {
+                target.Blit(model, p, r);
+
+                if (fx != null)
+                    target.Blit(fx, p, f);
+            }
    }
 
    public  override bool  Deserialize(ref byte[] data, ref int r)
@@ -179,9 +188,9 @@ public class Vehicle :Thing
    }
 }
 
-public class Military :Vehicle
+public class Combat :Vehicle
 {
-  public Military(Space space, int id)
+  public Combat(Space space, int id)
   :base(space, id, TYPE_PLANE0)
   {
          model = new Surface("scene/plane-red.png");
@@ -195,8 +204,9 @@ public class Airliner :Vehicle
   public Airliner(Space space, int id)
   :base(space, id, TYPE_PLANE1)
   {
-         model = new Surface("scene/plane-red.png");
+         model = new Surface("scene/plane-blue.png");
          velocity = new vector(0.0f, 0.0f, 0.020f);
+         rolltime = 15;
   }
 }
 
@@ -205,7 +215,12 @@ public class Helicopter :Vehicle
   public Helicopter(Space space, int id)
   :base(space, id, TYPE_COPTER)
   {
-         model = new Surface("scene/plane-red.png");
+         width = 96;
+         height = 96;
+         model = new Surface("scene/copter-body.png");
+         fx = new Surface("scene/copter-prop.png");
+         velocity = new vector(0.0f, 0.0f, 0.010f);
+         rolltime = 0;
   }
 }
 

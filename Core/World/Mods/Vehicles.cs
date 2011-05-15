@@ -231,9 +231,9 @@ public class Vehicle :Thing
    }
 }
 
-public class Military :Vehicle
+public class Combat :Vehicle
 {
-  public Military(Space space)
+  public Combat(Space space)
   :base(space, -1, TYPE_PLANE0)
   {
          runtime  = 35.0f;

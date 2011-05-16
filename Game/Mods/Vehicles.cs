@@ -134,10 +134,12 @@ public class Vehicle :Thing
                     tstep = 0;
 
                 if ((tstep % 8) > 4)
+                {
                      target.Blit(model, p, r);
 
-                if (fx != null)
-                    target.Blit(fx, p, f);
+                     if (fx != null)
+                         target.Blit(fx, p, f);
+                }
 
             }   else
             {

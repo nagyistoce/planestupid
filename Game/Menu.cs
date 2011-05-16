@@ -30,6 +30,7 @@ using SdlDotNet.Graphics;
 using Game.Ui;
 using Game.Ui.Controls;
 using Core;
+using Core.Net;
 using Core.World;
 using Core.Cortex;
 
@@ -205,12 +206,10 @@ public class Menu :App
         }
 
            mConfigWindow.ResetEnabled(this, false);
-           mErrorWindow.ResetEnabled(this, false);
            mServerDialog.ResetEnabled(this, false);
+           mErrorWindow.ResetEnabled(this, false);
            UnlockMenu();
-
            mHourglass.Hide();
-
            ingameplay = false;
            return 0;
    }
@@ -430,6 +429,7 @@ class ConfigWindow :Window, Cortex.iBase
    private  void ExitGameScene()
    {
             mPlay.End();
+            mNames.Clear();
             Desktop.AppSelect(menu);
             menu.ResetEnabled(this, true);
             Leave(null);
@@ -437,6 +437,7 @@ class ConfigWindow :Window, Cortex.iBase
 
    public  void adDropped(Cortex sender)
    {
+            Console.WriteLine("Dropping connection to server.");
             Desktop.Jobs.Schedule(null, Leave);
    }
 
@@ -448,6 +449,9 @@ class ConfigWindow :Window, Cortex.iBase
            foreach (User u in users)
            {
                     mNames.Add(u.getSID(), u.getNick(), u.getGID());
+
+                if ((u.flags & Proto.F_SELF) != 0)
+                    mNickEdit.Text = u.nick;
            }
 
            mNames.Resume();
@@ -461,11 +465,13 @@ class ConfigWindow :Window, Cortex.iBase
    public  void ubJoined(Cortex sender, User user)
    {
            mNames.Add(user.getSID(), user.getNick(), user.getGID());
+           Console.WriteLine("Joined: {0}", user.getNick());
    }
 
    public  void ubLeft(Cortex sender, User user)
    {
            mNames.Drop(user.getSID());
+           Console.WriteLine("Left: {0}", user.getNick());
    }
 
    public  void gxLoad(Cortex sender)
@@ -480,6 +486,16 @@ class ConfigWindow :Window, Cortex.iBase
    public  void gxOver(Cortex sender)
    {
            ExitGameScene();
+   }
+
+   public override void ResetEnabled (Widget authority, bool value)
+   {
+           base.ResetEnabled (authority, value);
+
+       if (!value)
+       {
+           mNames.Clear();
+       }
    }
 }
 

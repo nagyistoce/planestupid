@@ -1,0 +1,36 @@
+PlaneStupid
+-----------
+
+PlaneStupid is a multiplayer air traffic control game similar to FlightControl.
+Written in c# and originally developed under the Mono platform.
+Available under zlib/libpng licence.
+
+Dependencies (on all platforms)
+libsdl
+libsdl-gfx
+libsdl-image
+libsdl-ttf2
+libsdl-sound
+libsdl-mixer
+
+Play on GNU/Linux and MAC
+1. untar
+2. run "mono Game.exe"
+
+Play on Windows
+idk
+
+Notes:
+The whole Game.Ui namespace is sort of a mess, i will clean it up in due time; if you'd
+like to use that part of the source, just be careful and don't borrow it with my mistakes.
+
+Bugs:
+none that i can specifically point out atm, though i'm aware that the game *does* occasionaly
+crash or freeze for no apparent reason.
+
+Credits:
+spaceape [ spaceape99@gmail.com ] - coding and graphics
+k2 - ideeas, graphics, testing
+
+Enjoy.
+spaceape

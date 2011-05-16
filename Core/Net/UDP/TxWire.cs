@@ -56,6 +56,7 @@ public class TxWire :iWire
    {
            ctx = 0;
            owner.socket.SendTo(src, point);
+           Console.WriteLine("Tx {0} {1} > {2}", src.Length, point.ToString(), src[0]);
    }
 
    public override bool dequeue(out byte[] dst)

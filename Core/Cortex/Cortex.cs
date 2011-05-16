@@ -64,7 +64,7 @@ public class Cortex
            //admin events
            void adDropped(Cortex sender);
 
-           //userbase events
+           //userbase events ([names] is already locked for these events)
            void ubRehashed(Cortex sender, NameList users);
            void ubModified(Cortex sender, User user);
            void ubJoined(Cortex sender, User user);
@@ -243,37 +243,41 @@ public class Cortex
                        if (recv.Length < 3)
                            ERecv.Throw(Error.Parse);
 
-                           names.Clear();
+                           lock(names) {
 
-                           try
-                           {
-                                 while(recv[r] != Proto.EONAMES)
-                                 {
-                                        User user = new User();
-                                        user.flags = recv[r++];
+                                names.Clear();
 
-                                    if ((user.flags & Proto.F_TEST) == 0)
-                                        ERecv.Throw(Error.Parse);
+                                try
+                                {
+                                      while(recv[r] != Proto.EONAMES)
+                                      {
+                                            User user = new User();
+                                            user.flags = recv[r++];
 
-                                    if ((user.flags & Proto._F_SID) == sid)
-                                        user.flags |= Proto.F_SELF;
+                                        if ((user.flags & Proto.F_TEST) == 0)
+                                             ERecv.Throw(Error.Parse);
 
-                                        user.perms = recv[r++];
+                                        if ((user.flags & Proto._F_SID) == sid)
+                                            user.flags |= Proto.F_SELF;
 
-                                    if (!Proto.gets(ref recv, ref r, out user.nick))
-                                        ERecv.Throw(Error.Parse);
+                                            user.perms = recv[r++];
 
-                                        Console.WriteLine(user.ToString());
-                                        names.Add(user);
-                                 }
+                                        if (!Proto.gets(ref recv, ref r, out user.nick))
+                                            ERecv.Throw(Error.Parse);
 
-                                 if (pBase != null)
-                                     pBase.ubRehashed(this, names);
+                                            Console.WriteLine(user.ToString());
+                                            names.Add(user);
+                                      }
+
+                                      if (pBase != null)
+                                          pBase.ubRehashed(this, names);
+                                }
+                                catch(Exception e)
+                                {
+                                      ERecv.Throw(Error.Parse);
+                                }
                            }
-                           catch(Exception e)
-                           {
-                                 ERecv.Throw(Error.Parse);
-                           }
+                           /*lock*/
                   }
                        break;
 
@@ -289,22 +293,25 @@ public class Cortex
                       if  (!Proto.gets(ref recv, ref r, out nick))
                            ERecv.Throw(Error.Parse);
 
+                      lock(names) {
+
                            User u = names.getUser(f, true);
                            bool j = (u.flags & Proto.F_TEST) == 0;
                            u.flags = f;
                            u.perms = p;
                            u.nick  = nick;
 
-                       if (u.getSID() == sid)
-                           this.nick = nick;
+                           if (u.getSID() == sid)
+                               this.nick = nick;
 
-                       if (pBase != null)
-                       {
-                           if (j)
-                               pBase.ubJoined(this, u);
-                               else
-                               pBase.ubModified(this, u);
-                       }
+                            if (pBase != null)
+                            {
+                               if (j)
+                                   pBase.ubJoined(this, u);
+                                   else
+                                   pBase.ubModified(this, u);
+                            }
+                      }
                   }
                        break;
 
@@ -313,17 +320,21 @@ public class Cortex
                        if (recv.Length < 3)
                            ERecv.Throw(Error.Parse);
 
+                       lock(names) {
+
                            byte f = recv[r++];
 
                            int  x = names.getUserIndex(f);
 
                            User u = names[x];
 
-                       if (x > 0)
-                           names.RemoveAt(x);
+                           if (x > 0)
+                               names.RemoveAt(x);
 
-                       if (pBase != null)
-                           pBase.ubLeft(this, u);
+
+                           if (pBase != null)
+                               pBase.ubLeft(this, u);
+                       }
                   }
                        break;
 
@@ -499,12 +510,12 @@ public class Cortex
 
                 for (cnt = 0; cnt != 3; cnt++)
                 {
-                     Console.WriteLine("Login: Attempt {0}/3...", cnt + 1);
                      Tx.enqueue(send);
+                     Console.WriteLine("Login: Attempt {0}/3...", cnt + 1);
 
                      if (Monitor.Wait(this, Proto.msPingTime))
                      {
-                         if (op == Proto.Cortex.LOGIN)
+                         if ((op == Proto.Cortex.LOGIN) || (op == Proto.Cortex.NAMES))
                          {
                              if (error == Error.Okay)
                              {   thread = new Thread(new ThreadStart(sync));

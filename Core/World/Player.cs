@@ -112,13 +112,11 @@ public class Player :Session
                                        break;
 
                                       PlayerEvent.Login(priv, getflags(), getperms(), nick);
-
                                       PlayerEvent.Names(priv, world.players);
                                       fresh = false;
                               }
 
                                   PlayerEvent.Join(broad, getflags(), getperms(), nick);
-                                  Console.WriteLine("Logged in {0}", nick);
                          }
                               break;
 
@@ -229,7 +227,7 @@ public class Player :Session
 
            if  (ok)
            {
-                  int y = 0;
+                  int y = 1;
                   bool found;
 
                   while(y < Proto.MaxGamers)
@@ -241,8 +239,7 @@ public class Player :Session
                             if (world.players[x] != null)
                             {
                                 if (world.players[x].getgid() == y)
-                                {
-                                    found = true;
+                                {   found = true;
                                     break;
                                 }
                             } 

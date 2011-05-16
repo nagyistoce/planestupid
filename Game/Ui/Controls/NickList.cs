@@ -131,12 +131,12 @@ public class NickList :Widget
 
            lock(names) {
 
-       Nick nick = new Nick(this, uid, px, py);
-           nick.setName(name);
-           nick.setTeam(team);
-           names.Add(nick);
+                Nick nick = new Nick(this, uid, px, py);
+                nick.setName(name);
+                nick.setTeam(team);
+                names.Add(nick);
 
-           /**/ }
+           }
            resync = true;
    }
 
@@ -188,6 +188,15 @@ public class NickList :Widget
            lock(names) {
 
                 names.Remove(nick);
+
+                int py = 0;
+
+                foreach(Nick ent in names)
+                {
+                        ent.Y = py;
+                        py += ent.Height + 4;
+                }
+           
            }
 
            resync = true;
@@ -196,7 +205,11 @@ public class NickList :Widget
 
    public  void Clear()
    {
-           names.Clear();
+           lock(names) {
+
+                names.Clear();
+
+           }
            resync |= true;
    }
 
@@ -208,12 +221,15 @@ public class NickList :Widget
        if (idle)
            return false;
 
-           foreach (Nick nick in names)
-           {
+           lock(names) {
+
+               foreach (Nick nick in names)
+               {
                    resync |= nick.Sync(dt);
+               }
            }
 
-            return resync;
+               return resync;
    }
 
    public  override void Draw(Surface dst)
@@ -221,15 +237,19 @@ public class NickList :Widget
        if (idle && !resync)
            return;
 
-           foreach (Nick nick in names)
-           {
-                   nick.Draw(Surface);
+           lock(names) {
+
+                Surface.Fill(Color.FromArgb(0, 0, 0, 0));
+
+                foreach (Nick nick in names)
+                {
+                         nick.Draw(Surface);
+                }
            }
 
            Surface.Update();
            resync = false;
 
- 
            dst.Blit(this);
    }
 

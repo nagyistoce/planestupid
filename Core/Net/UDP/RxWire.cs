@@ -74,6 +74,7 @@ public class RxWire :iWire
                }
 
                Monitor.Pulse(this);
+               //Console.WriteLine("Rx {0} {1} > {2}", "-", src.Length, src[0]);
            }
    }
 

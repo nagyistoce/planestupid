@@ -47,7 +47,7 @@ public class World
                            session = new Player(instance, RxID);
                    }
                    
-                   //Console.WriteLine("Session Accept {0} -> {1}", RxID.ToString(), session.GetHashCode());
+                   Console.WriteLine("Session Accept {0} -> {1}", RxID.ToString(), session.GetHashCode());
 
                    return (RxWire = session.Rx) != null;
            }

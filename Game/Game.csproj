@@ -221,6 +221,8 @@
     <None Include="res\helipad-pointer.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="COPYING" />
+    <None Include="README" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">

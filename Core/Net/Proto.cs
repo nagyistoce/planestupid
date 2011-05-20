@@ -45,8 +45,8 @@ public class Proto
           public const int  msPingTime = 5000;
           public const int  msDcTime = 50000; //disconnect time
           public const int  msLdTime = 10000; //load time
-          public const int  msRsTime = 250; //time between scene syncs
-          public const float dtRsTime = msRsTime / 1000.0f; //time between scene syncs
+          public const int  msRsTime = 250; //time between scene syncs [ms]
+          public const float dtRsTime = msRsTime / 1000.0f; //time between scene syncs [s]
 
           //flags
           public const int _F_SID = 0x0f;

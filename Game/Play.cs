@@ -383,6 +383,7 @@ public class Play :App, Cortex.iDynamics
                  mGameBox.Sync(dt);
            }
 
+           Cortex.Sync(Proto.msRsTime);
            return true;
    }
 

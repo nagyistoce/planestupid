@@ -139,8 +139,6 @@ public class Cortex
 
            NameList names;
 
-           Thread thread;
-
    Cortex(ref Config config)
    {
            this.info = new Info();
@@ -367,10 +365,12 @@ public class Cortex
                        break;
 
                   case Proto.Cortex.KILL:
+                  {
                        sid = 0;
                        gid = 0;
                        perms = 0;
                        nick = null;
+                  }
                        break;
                 }
 
@@ -413,18 +413,14 @@ public class Cortex
    }
 */
            bool live;
-   static  int  msleep = Proto.msPingTime / 5;
 
    /*monitor*/
-   private void  sync()
+   private void  sync(int ms)
    {
-           Rx.crx = 0;
-           Tx.ctx = 0;
-           
-       try
+       if (live)
        {
-           while(live)
-           {
+           lock(this) {
+
               if (Rx.crx >= Proto.msPingTime)
                   ping();
 
@@ -434,19 +430,10 @@ public class Cortex
               if (Tx.ctx >= Proto.msPingTime)
                   ping();
 
-                  Rx.crx += msleep;
-                  Tx.ctx += msleep;
-
-                  Thread.Sleep(msleep);
+                  Rx.crx += ms;
+                  Tx.ctx += ms;
            }
-      }
-      catch(ThreadAbortException e)
-      {
-            Console.WriteLine("[Cortex:{0}] Brutally killed...", GetHashCode());
-      }
-      finally
-      {
-      }
+       }
    }
 
    private void ping()
@@ -518,9 +505,9 @@ public class Cortex
                          if ((op == Proto.Cortex.LOGIN) || (op == Proto.Cortex.NAMES))
                          {
                              if (error == Error.Okay)
-                             {   thread = new Thread(new ThreadStart(sync));
-                                 thread.IsBackground = true;
-                                 thread.Start();
+                             {
+                                 Rx.crx = 0;
+                                 Tx.ctx = 0;
                                  live = true;
                              }
 
@@ -663,14 +650,7 @@ public class Cortex
        if (disposed)
            return;
 
-       if (thread != null)
-       {
-           if (thread.IsAlive)
-           {
-               live = false;
-               thread.Join();
-           }
-       }
+           live = false;
 
            broadcast.TxClose(Tx);
 
@@ -752,6 +732,11 @@ public class Cortex
    {
            get {return instance.pDynamics;}
            set {instance.pDynamics = value;}
+   }
+
+   public  static void Sync(int ms)
+   {
+           instance.sync(ms);
    }
 
    /* instance */

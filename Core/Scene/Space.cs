@@ -38,11 +38,6 @@ namespace Core.Scene {
 public class Space
 {
    public  SortedDictionary<int, Thing> things;
-
-   public  SortedDictionary<string, Mesh> meshes;
-   public  SortedDictionary<string, Material> materials;
-   public  SortedDictionary<string, Texture> textures;
-
            SortedDictionary<int, Body> bots;
 
            Size  pxField;
@@ -57,9 +52,6 @@ public class Space
    public Space()
    {
            things = new SortedDictionary<int, Thing>();
-           meshes = new SortedDictionary<string, Mesh>();
-           materials = new SortedDictionary<string, Material>();
-           textures = new SortedDictionary<string, Texture>();
    }
 
    public  Space(Size field, Rectangle viewport)

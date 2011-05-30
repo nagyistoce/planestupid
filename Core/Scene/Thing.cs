@@ -41,7 +41,7 @@ public class Thing
    protected vector pos = vector.Null;
    protected vector rot = vector.Null;
 
-   protected Mesh   mesh;
+ //protected Mesh   mesh;
    protected Surface surface;
 
    public interface Ai

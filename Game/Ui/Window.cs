@@ -71,7 +71,7 @@ public class Window :Widget
 
    public  override void AddWidget(Widget w)
    {
-           lock(this)
+           lock(widgets)
            {
                 widgets.Add(w);
            }
@@ -79,7 +79,7 @@ public class Window :Widget
 
    public  override void RemWidget(Widget w)
    {
-           lock(this)
+           lock(widgets)
            {
                 widgets.Remove(w);
                 resync |= true;
@@ -88,7 +88,7 @@ public class Window :Widget
 
    public  override void ResetEnabled(Widget authority, bool value)
    {
-           lock(this)
+           lock(widgets)
            {
                 foreach(Widget w in widgets)
                 {
@@ -141,7 +141,7 @@ public class Window :Widget
                resync |= true;
        }
 
-       lock(this) 
+       lock(widgets) 
        {
               foreach(Widget w in widgets)
               {
@@ -168,7 +168,7 @@ public class Window :Widget
                Surface.Blit(bgimage);
            }
 
-           lock(this)
+           lock(widgets)
            {
                foreach(Widget w in widgets)
                {
@@ -190,18 +190,26 @@ public class Window :Widget
        if (disposed)
            return;
 
-           lock(this)
-           {
-                foreach(Widget w in widgets)
+       lock(this) {
+            try
+            {
+                lock(widgets)
                 {
-                        w.Dispose();
+                     foreach(Widget w in widgets)
+                     {
+                             w.Dispose();
+                     }
                 }
-           }
 
-           base.Dispose();
-           disposed = true;
+                base.Dispose();
+            }
+            catch(Exception e)
+            {
+            }
+
+            disposed = true;
+       }
    }
-
  }
 
 /*namespace Game.Ui*/ }

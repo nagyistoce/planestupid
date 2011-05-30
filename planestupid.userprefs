@@ -1,39 +1,33 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" ctype="Workspace" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Release" ctype="Workspace" />
   <MonoDevelop.Ide.DebuggingService>
     <BreakpointStore>
       <Breakpoint file="/home/poke/src/ps/Core/Cortex.cs" line="328" />
       <Breakpoint file="/home/poke/src/ps/Game/Menu.cs" line="337" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService>
-  <MonoDevelop.Ide.Workbench ActiveDocument="Core/Cortex/Cortex.cs" ctype="Workbench">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Core/Scene/Space.cs" ctype="Workbench">
     <Files>
-      <File FileName="Game/Menu.cs" Line="454" Column="45" />
+      <File FileName="Game/Game.cs" Line="1" Column="1" />
+      <File FileName="Game/Menu.cs" Line="1" Column="1" />
       <File FileName="Game/Play.cs" Line="1" Column="1" />
-      <File FileName="Core/World/World.cs" Line="50" Column="20" />
-      <File FileName="Core/World/Player.cs" Line="115" Column="78" />
-      <File FileName="Core/Cortex/Cortex.cs" Line="499" Column="1" />
+      <File FileName="Core/World/World.cs" Line="1" Column="1" />
+      <File FileName="Core/World/Player.cs" Line="1" Column="1" />
+      <File FileName="Core/Cortex/Cortex.cs" Line="1" Column="1" />
       <File FileName="Core/Net/Proto.cs" Line="1" Column="1" />
+      <File FileName="Core/Scene/Space.cs" Line="45" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
-        <State expanded="True">
+        <State expanded="True" selected="True">
+          <Node name="t" expanded="True">
+            <Node name="net2t" expanded="True" />
+          </Node>
           <Node name="Core" expanded="True">
-            <Node name="Cortex" expanded="True">
-              <Node name="Cortex.cs" selected="True" />
-            </Node>
-            <Node name="Net" expanded="True">
-              <Node name="UDP" expanded="True" />
-            </Node>
-            <Node name="World" expanded="True">
-              <Node name="Mods" expanded="True" />
-            </Node>
+            <Node name="Scene" expanded="True" />
           </Node>
           <Node name="Game" expanded="True">
-            <Node name="Mods" expanded="True" />
-            <Node name="Ui" expanded="True">
-              <Node name="Controls" expanded="True" />
-            </Node>
+            <Node name="Ui" expanded="True" />
           </Node>
         </State>
       </Pad>

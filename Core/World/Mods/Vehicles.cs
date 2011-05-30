@@ -56,6 +56,11 @@ public class Vehicle :Thing
             lifetime -= dt;
        }
 
+       if ((pos.x > 1.0f) || (pos.x < -1.0f) || (pos.y > 1.0f) || (pos.y < -1.0f))
+       {
+            lifetime -= dt;
+       }
+
            PointF prev;
 
        if (path.Count != 0)

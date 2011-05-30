@@ -195,8 +195,6 @@ public class Cortex
        if ((n = recv.Length) < 1)
            return;
 
-           lock(this) {
-
            try
            {
                 switch(op = recv[r++])
@@ -209,8 +207,11 @@ public class Cortex
                        if (recv.Length < 5)
                            ERecv.Throw(Error.Parse);
 
-                           info.MajorVersNo = recv[r++];
-                           info.MinorVersNo = recv[r++];
+                           lock(this) {
+
+                                info.MajorVersNo = recv[r++];
+                                info.MinorVersNo = recv[r++];
+                           }
                   }
                        break;
 
@@ -219,20 +220,23 @@ public class Cortex
                        if (recv.Length < 3)
                            ERecv.Throw(Error.Parse);
 
-                           int f = recv[r++];
-                           sid   = f & 0x0f;
-                           gid   = f & 0x30;
+                           lock(this) {
 
-                           byte p = recv[r++];
-                           perms  = p;
+                                int f = recv[r++];
+                                sid   = f & 0x0f;
+                                gid   = f & 0x30;
 
-                           string nick;
+                                byte p = recv[r++];
+                                perms  = p;
 
-                       if (!Proto.gets(ref recv, ref r, out nick))
-                           ERecv.Throw(Error.Parse);
+                                string nick;
 
-                       if (nick.Length == 0)
-                           ERecv.Throw(Error.Parse);
+                                if (!Proto.gets(ref recv, ref r, out nick))
+                                    ERecv.Throw(Error.Parse);
+
+                                if (nick.Length == 0)
+                                    ERecv.Throw(Error.Parse);
+                           }
                   }
                        break;
 
@@ -361,15 +365,21 @@ public class Cortex
                   {
                        if (pDynamics != null)
                            pDynamics.dyOver(this, recv, ref r);
+
+                           live = false;
                   }
                        break;
 
                   case Proto.Cortex.KILL:
                   {
-                       sid = 0;
-                       gid = 0;
-                       perms = 0;
-                       nick = null;
+                       lock(this) {
+                            sid = 0;
+                            gid = 0;
+                            perms = 0;
+                            nick = null;
+
+                            live = false;
+                       }
                   }
                        break;
                 }
@@ -391,9 +401,7 @@ public class Cortex
            }
            finally
            {
-                    Monitor.Pulse(this);
            }
-           /*lock*/ }
    }
 /*
    private void  LockSession()
@@ -419,43 +427,39 @@ public class Cortex
    {
        if (live)
        {
-           lock(this) {
+           lock(Rx) {
+                lock(Tx) {
 
-              if (Rx.crx >= Proto.msPingTime)
-                  ping();
+                     if (Rx.crx >= Proto.msPingTime)
+                         ping();
 
-              if (Rx.crx >= Proto.msDcTime)
-                  drop();
+                     if (Rx.crx >= Proto.msDcTime)
+                         drop();
 
-              if (Tx.ctx >= Proto.msPingTime)
-                  ping();
+                     if (Tx.ctx >= Proto.msPingTime)
+                         ping();
 
-                  Rx.crx += ms;
-                  Tx.ctx += ms;
+                         Rx.crx += ms;
+                         Tx.ctx += ms;
+                }
            }
        }
    }
 
    private void ping()
    {
-           lock(this) {
-               Tx.enqueue(new byte[]{ Proto.World.PING });
-           /*lock*/ }
+           Tx.enqueue(new byte[]{ Proto.World.PING });
    }
 
    private void drop()
    {
-           lock(this) {
-                //Tx.enqueue(new byte[]{ Proto.World.PING });
-                if (pBase != null)
-                    pBase.adDropped(this);
-
-           /*lock*/ }
+       if (pBase != null)
+           pBase.adDropped(this);
    }
 
    private Error Connect()
    {
-           lock(this) {
+           lock(Rx) {
 
                 int cnt;
 
@@ -464,7 +468,7 @@ public class Cortex
                      Console.WriteLine("Connect: Attempt {0}/3...", cnt + 1);
                      Tx.enqueue(new byte[]{ Proto.World.HI });
 
-                     if (Monitor.Wait(this, Proto.msPingTime))
+                     if (Monitor.Wait(Rx, Proto.msPingTime))
                      {
                          if (op == Proto.Cortex.HI)
                          {
@@ -472,7 +476,7 @@ public class Cortex
                          }
                      }
                 }
-           /*lock*/}
+           }
 
            return Error.Failed;
    }
@@ -482,7 +486,7 @@ public class Cortex
        if (live)
            return Rename(Nick);
 
-           lock(this) {
+           lock(Rx) {
 
                 int s = 0;
                 byte[] send = null;
@@ -500,13 +504,12 @@ public class Cortex
                      Tx.enqueue(send);
                      Console.WriteLine("Login: Attempt {0}/3...", cnt + 1);
 
-                     if (Monitor.Wait(this, Proto.msPingTime))
+                     if (Monitor.Wait(Rx, Proto.msPingTime))
                      {
                          if ((op == Proto.Cortex.LOGIN) || (op == Proto.Cortex.NAMES))
                          {
                              if (error == Error.Okay)
-                             {
-                                 Rx.crx = 0;
+                             {   Rx.crx = 0;
                                  Tx.ctx = 0;
                                  live = true;
                              }
@@ -515,14 +518,14 @@ public class Cortex
                          }
                      }
                 }
-           /*lock*/}
+           }
 
            return Error.Failed;
    }
 
    private Error Rename(string Nick)
    {
-           lock(this) {
+           lock(Rx) {
 
                 int s = 0;
                 byte[] send = null;
@@ -540,7 +543,7 @@ public class Cortex
 
                 while (x < 3)
                 {
-                        Monitor.Wait(this, Proto.msPingTime);
+                        Monitor.Wait(Rx, Proto.msPingTime);
 
                     if (op == Proto.Cortex.JOINED)
                         break;
@@ -548,14 +551,14 @@ public class Cortex
                         x++;
                 }
      
-           /*lock*/}
+           }
 
            return Error.Okay;
    }
 
    private Error Prepare()
    {
-           lock(this) {
+           lock(Rx) {
 
                 int cnt;
 
@@ -564,7 +567,7 @@ public class Cortex
                      Console.WriteLine("Prepare: Attempt {0}/3...", cnt + 1);
                      Tx.enqueue(new byte[]{ Proto.World.PREP });
 
-                     if (Monitor.Wait(this, Proto.msPingTime))
+                     if (Monitor.Wait(Rx, Proto.msPingTime))
                      {
                          if (op == Proto.Cortex.LOAD)
                          {
@@ -572,18 +575,16 @@ public class Cortex
                          }
                      }
                 }
-
-           /*lock*/}
+           }
 
            return Error.Failed;
    }
 
    private Error Ready()
    {
-           lock(this) {
+           lock(Rx) {
 
                 int cnt;
-
                 Console.WriteLine("Ready (single shot)");
                 Tx.enqueue(new byte[]{ Proto.World.READY });
            }
@@ -593,7 +594,7 @@ public class Cortex
 
    private Error Srt(int id, PointF[] route)
    {
-           lock(this) {
+           lock(Rx) {
 
                 int s = 0;
 
@@ -614,8 +615,6 @@ public class Cortex
                 Proto.pack(ref b, ref s, ref send);
 
                 Tx.enqueue(send);
-
-              //Console.WriteLine("CORTEX SRT {0} {1}bytes", id, send.Length);
            }
 
            return Error.Okay;
@@ -623,7 +622,7 @@ public class Cortex
 
    private Error Sfl(int id, byte[] flags)
    {
-           lock(this) {
+           lock(Rx) {
 
                 int s = 0;
 
@@ -649,8 +648,6 @@ public class Cortex
    {
        if (disposed)
            return;
-
-           live = false;
 
            broadcast.TxClose(Tx);
 

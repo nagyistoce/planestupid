@@ -178,7 +178,7 @@ public class Menu :App
        catch(Exception e)
        {
                Console.WriteLine("Error: {0}", e.ToString());
-               mErrorWindow.Message = "Something shitty just happened";
+               mErrorWindow.Message = e.Message;
                mErrorWindow.ResetEnabled(this, true);
                return 1;
        }

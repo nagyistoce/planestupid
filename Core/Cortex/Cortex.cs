@@ -54,6 +54,8 @@ public class Cortex
            Mux mux;
 
            UId    Id;
+           byte   f;
+
            int    sid = -1;
            int    gid = -1;
            int    perms;
@@ -80,6 +82,7 @@ public class Cortex
 
    public  interface iDynamics
    {
+           void dyNotify(Cortex sender, User user, string message);
            void dyStrobe(Cortex sender, byte[] data, ref int r);
            void dySync(Cortex sender, byte[] data, ref int r);
            void dyOver(Cortex sender, byte[] data, ref int r);
@@ -222,7 +225,7 @@ public class Cortex
 
                            lock(this) {
 
-                                int f = recv[r++];
+                                f = recv[r++];
                                 sid   = f & 0x0f;
                                 gid   = f & 0x30;
 
@@ -344,6 +347,34 @@ public class Cortex
                   {
                        if (pBase != null)
                            pBase.gxLoad(this);
+                  }
+                       break;
+
+                  case Proto.Cortex.NOTIFY:
+                  {
+                       if (recv.Length < 3)
+                           ERecv.Throw(Error.Parse);
+
+                           User u;
+                           string msg;
+
+                       lock(names) {
+
+                           byte f = recv[r++];
+
+                           int  x = names.getUserIndex(f);
+
+                                u = names[x];
+                       }
+
+                       if  (!Proto.gets(ref recv, ref r, out msg))
+                            ERecv.Throw(Error.Parse);
+
+                       if  (u != null)
+                       {
+                           if (pDynamics != null)
+                               pDynamics.dyNotify(this, u, msg);
+                       }
                   }
                        break;
 
@@ -556,6 +587,26 @@ public class Cortex
            return Error.Okay;
    }
 
+   private Error Message(string Msg)
+   {
+           lock(Rx) {
+
+                int s = 0;
+                byte[] send = null;
+
+                b[s++] = Proto.World.MESSAGE;
+                b[s++] = f;
+
+                Proto.puts(ref b, ref s, Msg);
+
+                Proto.pack(ref b, ref s, ref send);
+
+                Tx.enqueue(send);
+           }
+
+           return Error.Okay;
+   }
+
    private Error Prepare()
    {
            lock(Rx) {
@@ -681,6 +732,11 @@ public class Cortex
    public  static Error psLogin(string Nick)
    {
            return instance.Login(Nick);
+   }
+
+   public  static Error psMessage(string Message)
+   {
+           return instance.Message(Message);
    }
 
    public  static Error psPrepare()

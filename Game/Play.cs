@@ -49,7 +49,8 @@ public class Play :App, Cortex.iDynamics
 
            Space        space;
 
-           HudTable     hud;
+           HudTable     display;
+           HudChat      chat;
            List<Trap>   traps;
            SortedDictionary<int, LandingSpot> spots;
 
@@ -65,7 +66,11 @@ public class Play :App, Cortex.iDynamics
 
            Cortex = Core.Cortex.Cortex.Instance();
 
-           hud = new HudTable(this, 0, 0);
+           display = new HudTable(this, 0, 0);
+
+           chat = new HudChat(this, 8, Height - 16);
+
+           chat.OnCompleted = MessageCompleted;
 
            traps = new List<Trap>();
 
@@ -113,6 +118,7 @@ public class Play :App, Cortex.iDynamics
            }
 
            Cortex.psReady();
+
            freeze = false;
            ready = true;
            /*lock*/}
@@ -127,15 +133,31 @@ public class Play :App, Cortex.iDynamics
    internal  void End()
    {
            lock(this) {
-           ready = false;
 
-           /* free your crap here */
-           traps.Clear();
-           spots.Clear();
-           widgets.Clear();
-           space = null;
-           Console.WriteLine("Bye");
+                ready = false;
+
+             /* free your crap here */
+                traps.Clear();
+                spots.Clear();
+                widgets.Clear();
+                space = null;
+                Console.WriteLine("Bye");
+
            /*lock*/}
+   }
+
+   private void MessageCompleted(string message)
+   {
+           Cortex.psMessage(message);
+   }
+
+   public  void dyNotify(Cortex sender, User user, string message)
+   {
+           lock(this) {
+
+                chat.Notify(user, message);
+
+           /*lock*/ }
    }
 
    public  void dyStrobe(Cortex sender, byte[] data, ref int r)
@@ -172,7 +194,7 @@ public class Play :App, Cortex.iDynamics
                        Gamer gamer;
 
                     //get scores
-                       hud.MarkAll();
+                       display.MarkAll();
 
                        while((id = data[r++]) != Proto.EONAMES)
                        {
@@ -180,7 +202,7 @@ public class Play :App, Cortex.iDynamics
                           {
                               Proto.getn(ref data, ref r, out user.score);
                               
-                              gamer = hud.Get((id & Proto._F_GID) >> 4);
+                              gamer = display.Get((id & Proto._F_GID) >> 4);
                             
                               if (!gamer.Enabled)
                               {
@@ -194,7 +216,7 @@ public class Play :App, Cortex.iDynamics
                           }
                        }
 
-                       hud.DisableMarked();
+                       display.DisableMarked();
 
                 lock(space.things) {
 
@@ -379,7 +401,8 @@ public class Play :App, Cortex.iDynamics
                              OnGameOver();
                  }
 
-                 hud.Sync(dt);
+                 display.Sync(dt);
+                 chat.Sync(dt);
                  mGameBox.Sync(dt);
            }
 
@@ -389,10 +412,10 @@ public class Play :App, Cortex.iDynamics
            return true;
    }
 
-           Color[] colors = new Color[]{Color.Blue, Color.LightGreen, Color.Yellow, Color.Red,
-                                        Color.Aqua, Color.AliceBlue, Color.Azure, Color.BlueViolet,
-                                        Color.Bisque, Color.Coral, Color.Cyan, Color.Crimson,
-                                        Color.DeepPink, Color.Firebrick, Color.ForestGreen, Color.GreenYellow};
+           Color[] colors = new Color[]{Color.Blue, Color.LightGreen, Color.Red, Color.Firebrick,
+                                        Color.Yellow, Color.Azure, Color.ForestGreen, 
+                                        Color.Bisque, Color.Coral, Color.AliceBlue, Color.Cyan, Color.Aqua,
+                                        Color.BlueViolet, Color.DeepPink, Color.GreenYellow,  Color.Crimson};
 
 
    public  override void Draw(Surface dst)
@@ -444,9 +467,12 @@ public class Play :App, Cortex.iDynamics
                          }
                       /*lock*/}
                     /*lock*/}
+
+                    
                 }
 
-                        hud.Draw(dst);
+                        display.Draw(dst);
+                        chat.Draw(dst);
                 /*
                       //highlight points on the map
                         Point p   = space.SpaceToDesktop(-.36f, -.36f);

@@ -99,7 +99,6 @@ public class Player :Session
                               break;
 
                          case Proto.World.LOGIN:
-                         case Proto.World.RENAME:
                          {
                               if (!Proto.gets(ref recv, ref r, out nick))
                                   break;
@@ -124,6 +123,19 @@ public class Player :Session
                          {
                                PlayerEvent.Leave(broad, getflags(), "Left");
                                perms = 0;
+                         }
+                              break;
+
+                         case Proto.World.MESSAGE:
+                         {
+                              byte f = recv[r++];
+
+                              string msg;
+
+                              if (!Proto.gets(ref recv, ref r, out msg))
+                                  break;
+
+                              PlayerEvent.Notify(broad, f, msg);
                          }
                               break;
 
@@ -419,6 +431,7 @@ internal class PlayerEvent :Event
 
    public const int E_JOIN = 0x10;
    public const int E_LEAVE = 0x11;
+   public const int E_NOTIFY = 0x13;
 
    public const int E_LOAD = 0x20;
    public const int E_LIST = 0x22;
@@ -436,6 +449,7 @@ internal class PlayerEvent :Event
    public static ENames Names(EventQueue queue, Player[] players) {return new ENames(queue, players);}
    public static EJoin Join(EventQueue queue, byte f, byte p, string nick) {return new EJoin(queue, f, p, nick);}
    public static ELeave Leave(EventQueue queue, byte f, string message) {return new ELeave(queue, f, message);}
+   public static ENotify Notify(EventQueue queue, byte f, string message) {return new ENotify(queue, f, message);}
    public static ELoad Load(EventQueue queue) {return new ELoad(queue);}
    public static EList List(EventQueue queue, Space space) {return new EList(queue, space);}
    //public static ESync Sync(EventQueue queue, Space space) {return new ESync(queue, space);}
@@ -533,6 +547,22 @@ internal class ELeave :PlayerEvent
            byte[] data = new byte[512];
 
            Proto.putv(ref data, ref s, new byte[]{ Proto.Cortex.LEFT, f});
+
+           Proto.puts(ref data, ref s, message);
+
+           Proto.pack(ref data, ref s, ref send);
+   }
+}
+
+internal class ENotify :PlayerEvent
+{
+   public ENotify(EventQueue queue, byte f, string message)
+   :base(queue, E_LEAVE)
+   {
+           int s = 0;
+           byte[] data = new byte[512];
+
+           Proto.putv(ref data, ref s, new byte[]{ Proto.Cortex.NOTIFY, f});
 
            Proto.puts(ref data, ref s, message);
 

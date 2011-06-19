@@ -58,6 +58,7 @@
     <Compile Include="Ui\Controls\HudPlayers.cs" />
     <Compile Include="Ui\Controls\HudTraps.cs" />
     <Compile Include="Ui\Controls\Hourglass.cs" />
+    <Compile Include="Ui\Controls\HudChat.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="SdlDotNet, Version=6.1.0.0, Culture=neutral, PublicKeyToken=26ad4f7e10c61408">

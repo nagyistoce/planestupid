@@ -67,8 +67,9 @@ public class Proto
           public const byte PING = 0x01;
           public const byte HI = 0x02;
           public const byte LOGIN = 0x03;
-          public const byte RENAME = 0x04;
-          public const byte LOGOUT = 0x05;
+          public const byte RENAME = LOGIN;
+          public const byte LOGOUT = 0x04;
+          public const byte MESSAGE = 0x05;
 
           public const byte PREP = 0x20;
           public const byte READY = 0x21;
@@ -87,6 +88,7 @@ public class Proto
 
           public const byte JOINED = 0x10;
           public const byte LEFT = 0x11;
+          public const byte NOTIFY = 0x13;
 
           public const byte LOAD = 0x20;
           public const byte LIST = 0x22;

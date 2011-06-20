@@ -261,6 +261,12 @@ public class Menu :App
                     Desktop.Jobs.Schedule(null, LockGameplay); 
               }
                     break;
+
+              case  MenuButtonFunction.Quit:
+              {
+                    Events.QuitApplication();
+              }
+                    break;
             }
         }
 

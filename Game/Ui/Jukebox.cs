@@ -60,12 +60,25 @@ public class Jukebox
            switch(umode)
            {
              case MENU:
-             /*   add tunes for menu:
-                  tunes.Add(new Music("music/lackluster-onecycle.ogg"));
-             */
+                  tunes.Add(new Music("music/08.ogg"));
+                  tunes.Add(new Music("music/07.ogg"));
+                  tunes.Add(new Music("music/06.ogg"));
+                  tunes.Add(new Music("music/05.ogg"));
+                  tunes.Add(new Music("music/04.ogg"));
+                  tunes.Add(new Music("music/03.ogg"));
+                  tunes.Add(new Music("music/02.ogg"));
+                  tunes.Add(new Music("music/01.ogg"));
                   break;
 
              case GAME:
+                  tunes.Add(new Music("music/01.ogg"));
+                  tunes.Add(new Music("music/02.ogg"));
+                  tunes.Add(new Music("music/03.ogg"));
+                  tunes.Add(new Music("music/04.ogg"));
+                  tunes.Add(new Music("music/05.ogg"));
+                  tunes.Add(new Music("music/06.ogg"));
+                  tunes.Add(new Music("music/07.ogg"));
+                  tunes.Add(new Music("music/08.ogg"));
                   break;
            }
 

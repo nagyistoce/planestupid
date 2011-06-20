@@ -38,7 +38,9 @@ Bugs && peculiarities:
 
 Credits:
 spaceape [ spaceape99@gmail.com ] - coding and graphics
+younger spaceape did the music around 2005
 k2 - ideeas, graphics, testing
+slevin - ideeas, documentation, testing
 
 Enjoy.
 spaceape
